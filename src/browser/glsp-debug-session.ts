@@ -168,10 +168,19 @@ export class GLSPDebugSession extends DebugSession {
 
     protected async updateEventFlow() {
         this._glspDebugEvents.length = 0;
-        const response = await this.sendCustomRequest('eventFlowRequest');
-        response.body.eventFlow.map((entry: any) => {
-            this._glspDebugEvents.push(new DebugGLSPEvent(entry, this.asDebugEventOptions()));
-        });
+        try {
+            const response = await this.sendCustomRequest('eventFlowRequest');
+            response.body.eventFlow.map((entry: any) => {
+                this._glspDebugEvents.push(new DebugGLSPEvent(entry, this.asDebugEventOptions()));
+            });
+        } catch (error) {
+            // could be error or promise rejection
+            if (error instanceof Error) {
+                if(!error.message.match('unrecognized request')) {
+                    console.error(`Error event: ${error.message}`);
+                }
+            } 
+        }
     }
 
 

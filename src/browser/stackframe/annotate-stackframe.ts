@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@glsp/sprotty-client/lib";
+import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@eclipse-glsp/client/lib";
 import { ApplicationShell, WidgetOpenerOptions } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";

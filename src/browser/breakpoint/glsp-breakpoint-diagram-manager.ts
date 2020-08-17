@@ -13,7 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { DisableBreakpointAction, EnableBreakpointAction, RemoveBreakpointAction } from "@glsp/sprotty-client/lib/";
+import { DisableBreakpointAction, EnableBreakpointAction, RemoveBreakpointAction } from "@eclipse-glsp/client/lib/";
 import { ApplicationShell } from "@theia/core/lib/browser";
 import { inject, injectable } from "inversify";
 import { DiagramWidget } from "sprotty-theia/lib";

@@ -85,24 +85,34 @@ export class GLSPBreakpointManager extends BreakpointManager {
     }
 
     hasBreakpoints(): boolean {
-        return !!this.getUris().next().value || !!this.glspBreakpoints.length;
+        return !!this.getUris().next().value || !!this.glspBreakpointsDiagram.size;
     }
 
     removeBreakpoints(): void {
         this.cleanAllMarkers();
-        this.setGLSPBreakpoints([]);
+        this.removeGLSPBreakpoints();
     }
 
-    protected glspBreakpoints: GLSPBreakpoint[] = [];
+    removeGLSPBreakpoints(): void {
+        this.glspBreakpointsDiagram.clear;
+    }
+
+    protected glspBreakpointsDiagram = new Map<string, GLSPBreakpoint[]>();
 
     getGLSPBreakpoints(): GLSPBreakpoint[] {
-        return this.glspBreakpoints;
+        const bps = new Array<GLSPBreakpoint>();
+        for (let [, value] of this.glspBreakpointsDiagram) {
+            for (let bp of value) {
+                bps.push(bp);
+            }
+        }
+        return bps;
     }
 
-    setGLSPBreakpoints(glspBreakpoints: GLSPBreakpoint[]): void {
-        const oldBreakpoints = new Map(this.glspBreakpoints.map(b => [b.id, b] as [string, GLSPBreakpoint]));
+    setGLSPBreakpoints(uri: string, glspBreakpoints: GLSPBreakpoint[]): void {
+        const oldBreakpoints = this.glspBreakpointsDiagram.get(uri) || [];
 
-        this.glspBreakpoints = glspBreakpoints;
+        this.glspBreakpointsDiagram.set(uri, glspBreakpoints);
         this.fireOnDidChangeMarkers(GLSPBreakpointManager.GLSP_URI);
 
         const added: GLSPBreakpoint[] = [];
@@ -111,15 +121,15 @@ export class GLSPBreakpointManager extends BreakpointManager {
         const ids = new Set<string>();
         for (const newBreakpoint of glspBreakpoints) {
             ids.add(newBreakpoint.id);
-            if (oldBreakpoints.has(newBreakpoint.id)) {
+            if (oldBreakpoints.find(bp => bp.id === newBreakpoint.id)) {
                 changed.push(newBreakpoint);
             } else {
                 added.push(newBreakpoint);
             }
         }
-        for (const [id, breakpoint] of oldBreakpoints.entries()) {
-            if (!ids.has(id)) {
-                removed.push(breakpoint);
+        for (const bp of oldBreakpoints) {
+            if (!ids.has(bp.id)) {
+                removed.push(bp);
             }
         }
         this.onDidChangeGLSPBreakpointsEmitter.fire({ uri: GLSPBreakpointManager.GLSP_URI, added, removed, changed });
@@ -137,8 +147,8 @@ export class GLSPBreakpointManager extends BreakpointManager {
         for (const uri in data.breakpoints) {
             this.setBreakpoints(new URI(uri), data.breakpoints[uri]);
         }
-        if (data.glspBreakpoints) {
-            this.setGLSPBreakpoints(data.glspBreakpoints);
+        for (const uri in data.glspBreakpoints) {
+            this.setGLSPBreakpoints(uri, data.glspBreakpoints[uri]);
         }
     }
 
@@ -151,8 +161,10 @@ export class GLSPBreakpointManager extends BreakpointManager {
         for (const uri of uris) {
             data.breakpoints[uri] = this.findMarkers({ uri: new URI(uri) }).map(marker => marker.data);
         }
-        if (this.glspBreakpoints.length) {
-            data.glspBreakpoints = this.glspBreakpoints;
+        if (this.glspBreakpointsDiagram.size > 0) {
+            for (let [key, value] of this.glspBreakpointsDiagram) {
+                data.glspBreakpoints[key]= value;
+            }
         }
         this.storage.setData('breakpoints', data);
     }
@@ -164,7 +176,9 @@ export namespace GLSPBreakpointManager {
         breakpoints: {
             [uri: string]: SourceBreakpoint[]
         }
-        glspBreakpoints?: GLSPBreakpoint[]
+        glspBreakpoints: {
+            [uri: string]: GLSPBreakpoint[] 
+        }
     }
 }
 
