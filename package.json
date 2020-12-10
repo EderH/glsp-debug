@@ -10,19 +10,20 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "1.0.0",
-    "@theia/filesystem": "1.0.0",
-    "@theia/debug": "1.0.0",
-    "@theia/editor": "1.0.0",
-    "@theia/output": "1.0.0",
-    "@theia/terminal": "1.0.0",
+    "@eclipse-glsp/client-debug": "link:C:\\Users\\Public\\eclipse-glsp\\glsp-client",
+    "@theia/core": "1.4.0",
+    "@theia/debug": "1.4.0",
+    "@theia/editor": "1.4.0",
+    "@theia/filesystem": "1.4.0",
+    "@theia/output": "1.4.0",
+    "@theia/terminal": "1.4.0",
     "sprotty-theia": "next"
   },
   "devDependencies": {
     "@types/node": "10.14.18",
     "rimraf": "^2.6.1",
     "tslint": "^5.5.0",
-    "typescript": "3.4.3"
+    "typescript": "^3.9.2"
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
@@ -32,26 +33,27 @@
     "watch": "tsc -w"
   },
   "resolutions": {
-    "@theia/application-manager": "1.0.0",
-    "@theia/application-package": "1.0.0",
-    "@theia/core": "1.0.0",
-    "@theia/editor": "1.0.0",
-    "@theia/filesystem": "1.0.0",
-    "@theia/languages": "1.0.0",
-    "@theia/markers": "1.0.0",
-    "@theia/messages": "1.0.0",
-    "@theia/monaco": "1.0.0",
-    "@theia/navigator": "1.0.0",
-    "@theia/output": "1.0.0",
-    "@theia/preferences": "1.0.0",
-    "@theia/process": "1.0.0",
-    "@theia/terminal": "1.0.0",
-    "@theia/workspace": "1.0.0",
-    "@theia/task": "1.0.0",
-    "@theia/userstorage": "1.0.0",
-    "@theia/variable-resolver": "1.0.0",
-    "@theia/outline-view": "1.0.0",
-    "@theia/console": "1.0.0"
+    "@theia/application-manager": "1.4.0",
+    "@theia/application-package": "1.4.0",
+    "@theia/core": "1.4.0",
+    "@theia/debug": "1.4.0",
+    "@theia/editor": "1.4.0",
+    "@theia/filesystem": "1.4.0",
+    "@theia/languages": "1.4.0",
+    "@theia/markers": "1.4.0",
+    "@theia/messages": "1.4.0",
+    "@theia/monaco": "1.4.0",
+    "@theia/navigator": "1.4.0",
+    "@theia/output": "1.4.0",
+    "@theia/preferences": "1.4.0",
+    "@theia/process": "1.4.0",
+    "@theia/terminal": "1.4.0",
+    "@theia/workspace": "1.4.0",
+    "@theia/task": "1.4.0",
+    "@theia/userstorage": "1.4.0",
+    "@theia/variable-resolver": "1.4.0",
+    "@theia/outline-view": "1.4.0",
+    "@theia/console": "1.4.0"
   },
   "theiaExtensions": [
     {

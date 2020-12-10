@@ -176,10 +176,10 @@ export class GLSPDebugSession extends DebugSession {
         } catch (error) {
             // could be error or promise rejection
             if (error instanceof Error) {
-                if(!error.message.match('unrecognized request')) {
+                if (!error.message.match('unrecognized request')) {
                     console.error(`Error event: ${error.message}`);
                 }
-            } 
+            }
         }
     }
 

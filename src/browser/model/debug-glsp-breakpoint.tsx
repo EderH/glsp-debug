@@ -31,17 +31,19 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
     }
 
     setEnabled(enabled: boolean): void {
-        const breakpoints = this.breakpoints.getGLSPBreakpoints();
-        const breakpoint = breakpoints.find(b => b.id === this.origin.id);
-        if (breakpoint && breakpoint.enabled !== enabled) {
-            breakpoint.enabled = enabled;
-            this.breakpoints.setGLSPBreakpoints(breakpoints);
-            const bp = new Array<SModelElement>();
-            bp.push(breakpoint.element);
-            if (enabled) {
-                this.breakpointsDiagramManager.enableDiagramBreakpoints(breakpoint.uri, bp);
-            } else {
-                this.breakpointsDiagramManager.disableDiagramBreakpoints(breakpoint.uri, bp);
+        const breakpoints = this.breakpoints.getGLSPDiagramBreakpoints(this.origin.uri);
+        if (breakpoints) {
+            const breakpoint = breakpoints.find(b => b.id === this.origin.id);
+            if (breakpoint && breakpoint.enabled !== enabled) {
+                breakpoint.enabled = enabled;
+                this.breakpoints.setGLSPBreakpoints(breakpoint.uri, breakpoints);
+                const bp = new Array<SModelElement>();
+                bp.push(breakpoint.element);
+                if (enabled) {
+                    this.breakpointsDiagramManager.enableDiagramBreakpoints(breakpoint.uri, bp);
+                } else {
+                    this.breakpointsDiagramManager.disableDiagramBreakpoints(breakpoint.uri, bp);
+                }
             }
         }
     }
@@ -59,10 +61,12 @@ export class DebugGLSPBreakpoint extends DebugBreakpoint<GLSPBreakpoint> impleme
     }
 
     remove(): void {
-        const breakpoints = this.breakpoints.getGLSPBreakpoints();
-        const newBreakpoints = breakpoints.filter(b => b.id !== this.id);
-        if (breakpoints.length !== newBreakpoints.length) {
-            this.breakpoints.setGLSPBreakpoints(newBreakpoints);
+        const breakpoints = this.breakpoints.getGLSPDiagramBreakpoints(this.origin.uri);
+        if (breakpoints) {
+            const newBreakpoints = breakpoints.filter(b => b.id !== this.origin.id);
+            if (breakpoints.length !== newBreakpoints.length) {
+                this.breakpoints.setGLSPBreakpoints(this.origin.uri, newBreakpoints);
+            }
         }
     }
 

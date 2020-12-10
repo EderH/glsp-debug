@@ -13,59 +13,57 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ********************************************************************************/
-import { Action, AnnotateStackAction, ClearStackAnnotationAction, IActionDispatcher } from "@eclipse-glsp/client/lib";
-import { ApplicationShell, WidgetOpenerOptions } from "@theia/core/lib/browser";
+import { AnnotateStackAction, ClearStackAnnotationAction } from "@eclipse-glsp/client-debug";
+import { ApplicationShell } from "@theia/core/lib/browser";
 import URI from "@theia/core/lib/common/uri";
 import { DebugSession } from "@theia/debug/lib/browser/debug-session";
 import { DebugSource } from "@theia/debug/lib/browser/model/debug-source";
 import { DebugStackFrame } from "@theia/debug/lib/browser/model/debug-stack-frame";
 import { DiagramWidget } from "sprotty-theia";
 
-import { DebugGLSPEditorManager } from "../debug-glsp-editor-manager";
-
-
 export class AnnotateStackFrame {
-
-    private actionDispatcher: IActionDispatcher;
 
     private shell: ApplicationShell;
     private currentFrame: DebugStackFrame;
     private session: DebugSession;
-    private editorManager: DebugGLSPEditorManager;
 
-    constructor(session: DebugSession, shell: ApplicationShell, editorManager: DebugGLSPEditorManager) {
+    constructor(session: DebugSession, shell: ApplicationShell) {
         this.session = session;
         this.shell = shell;
-        this.editorManager = editorManager;
         this.session.onDidChange(() => this.annotateStackFrame());
     }
 
-
-    private async sendAction(action: Action): Promise<void> {
-        const widgets = this.shell.getWidgets("main");
-        if (widgets) {
-            for (const currentDiagram of widgets)
-                if (currentDiagram instanceof DiagramWidget && this.currentFrame.source && currentDiagram.uri.path.base === this.currentFrame.source.uri.path.base) {
-                    this.actionDispatcher = currentDiagram.actionDispatcher;
-                    if (this.actionDispatcher) {
-                        this.actionDispatcher.dispatch(action);
-                    }
-                }
+    findWidget(diagramUri: string): DiagramWidget | undefined {
+        const widgets = this.shell.getWidgets("main").filter(w => w instanceof DiagramWidget) as DiagramWidget[];
+        const widget = widgets.find(w => w.uri.path.base === diagramUri);
+        if (widget) {
+            return widget;
         }
+        return undefined;
     }
 
-    public async annotateStackFrame(): Promise<void> {
+    public annotateStackFrame(): void {
         if (this.session.currentFrame && (this.currentFrame !== this.session.currentFrame)) {
             if (this.currentFrame) {
-                await this.clearStackAnnotation();
+                this.clearStackAnnotation();
             }
             this.currentFrame = this.session.currentFrame;
-            await this.sendAction(new AnnotateStackAction(this.currentFrame.raw.name));
+            if (this.currentFrame.source) {
+                const widget = this.findWidget(this.currentFrame.source.uri.path.base);
+                if (widget) {
+                    widget.actionDispatcher.dispatch(new AnnotateStackAction(this.currentFrame.raw.name));
+                }
+            }
         }
     }
 
-    public async clearStackAnnotation(): Promise<void> {
-        await this.sendAction(new ClearStackAnnotationAction(this.currentFrame.raw.name));
+    public clearStackAnnotation(): void {
+        if (this.currentFrame.source) {
+            const widget = this.findWidget(this.currentFrame.source.uri.path.base);
+            if (widget) {
+                widget.actionDispatcher.dispatch(new ClearStackAnnotationAction(this.currentFrame.raw.name));
+            }
+        }
     }
 
     get source(): DebugSource | undefined {
@@ -74,21 +72,5 @@ export class AnnotateStackFrame {
 
     get uri(): URI | undefined {
         return this.currentFrame && this.currentFrame.source && this.currentFrame.source.uri;
-    }
-
-    async open(options: WidgetOpenerOptions = {
-        mode: 'reveal'
-    }): Promise<void> {
-        if (this.source) {
-            await this.source.open({
-                ...options
-            });
-        } else {
-            if (this.uri) {
-                await this.editorManager.open(this.uri, {
-                    ...options
-                });
-            }
-        }
     }
 }

@@ -18,9 +18,9 @@ import { SourceTreeWidget } from "@theia/core/lib/browser/source-tree";
 import { MenuPath } from "@theia/core/lib/common";
 import { DebugViewModel } from "@theia/debug/lib/browser/view/debug-view-model";
 import { DebugWidget } from "@theia/debug/lib/browser/view/debug-widget";
-import { Container, inject, injectable, interfaces, postConstruct } from "inversify";
 
 import { DebugGLSPEventsSource } from "./debug-glsp-events-source";
+import { injectable, interfaces, Container, inject, postConstruct } from "inversify";
 
 
 @injectable()
